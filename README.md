@@ -4,18 +4,19 @@ Starting with PHP & Coldfusion.
 
 I have partially ported few interesting functions that I am going to add to this project. 
 Some of the implementations are of questionable nature since these were coded while traveling inside a train. 
----------------------------
+
 
 Notes:
+
 1. These libraries are mostly pre JDK 1.5, needs to be cleaned up and ported to JDK 1.7
 2. Documentation and jar comments are partally lacking.
 3. JUnit testcases: some are to be imported/uploaded and rest to create.
 4. Remove lot of test code & main methods to factories/testcases.
 5. Add antfile & build targets for jar-ing & testing.
-5. More to be added as needed.
+6. More to be added as needed.
 
 How to use these:
-This is on a eclipse project 
+This is built as a eclipse project and you can either use the jar inside the dist folder or you can build it yourself and generate the jar manually.
 
 
 
