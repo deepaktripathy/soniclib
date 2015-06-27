@@ -1,0 +1,4 @@
+Earier commits: soniclib PHP & coldfusion code.
+
+Documenting starting with bfsSearch.
+Committing bfsSearch first commit.
