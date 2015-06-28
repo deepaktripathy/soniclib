@@ -22,7 +22,7 @@ public class PrintFileProcessor implements IFileProcessor{
 	public void process(Object o) {
 		if(printList == null) printList = new ArrayList<String>();
 		
-		System.out.println("Processing file " + o);
+		//System.out.println("Processing file " + o);
 		printList.add( ((File)o).getAbsolutePath());
 	}
 

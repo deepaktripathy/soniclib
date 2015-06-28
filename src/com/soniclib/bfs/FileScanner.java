@@ -31,317 +31,297 @@ import com.soniclib.utils.StringUtil;
  *
  */
 public class FileScanner {
-	    public void processFolderDfs(File root, FileFilter filter)
-	    {       
-	        if(root == null) return;
 
-	        //store all visited folders in a list to lookup later
-	        ArrayList<String> visitedList = new ArrayList<String>();
-	        
-	        System.out.print("Current File-" + root.getName() + "\t");
-            visitedList.add(root.getAbsolutePath());//mark visited
+	public void processFolderDfs(File root, FileFilter filter) 	{       
+		if(root == null) return;
 
-	        //for every child file
-            if(root.isDirectory()) {
-		        File[] files = (filter != null) ?root.listFiles(filter) :root.listFiles();
-		        for(File n: files)
-		        {
-		            //if child is not visited then recurse down
-	                if(visitedList.indexOf(n.getAbsolutePath()) == -1)//not visited
-		            {
-	                	processFolderDfs(n, filter);
-		            }
-		        }
-            }
-	    }
-	    
-	    /**
-	     * Takes in a folder path and prints ALL the children folders.
-	     * 
-	     * @param root file
-	     * @param filter FileFilter to filter children
-	     */
-	    public void processFolderBfs(File root, FileFilter filter, int toDepth, IFileProcessor processor)
-	    {
-	    	//sanity check
-	        if(root == null) return;
+		//store all visited folders in a list to lookup later
+		ArrayList<String> visitedList = new ArrayList<String>();
 
-	        Queue<File> childrenQueue = new LinkedList<File>();
+		System.out.print("Current File-" + root.getName());
+		visitedList.add(root.getAbsolutePath());//mark visited
 
-	        //store all visited folders in a list to lookup later
-	        ArrayList<String> visitedList = new ArrayList<String>();
+		//for every child file
+		if(root.isDirectory()) {
+			File[] files = (filter != null) ?root.listFiles(filter) :root.listFiles();
+			for(File n: files) {
+				//if child is not visited then recurse down
+				if(visitedList.indexOf(n.getAbsolutePath()) == -1) {//not visited 
+					processFolderDfs(n, filter);
+				}
+			}
+		}
+	}
 
-	        int depth = 0;//will hold the current depth
-	        int timeToDepthIncrease;//would slide up/down based on current set of nodes  
-	        boolean pendingDepthIncrease = false;//a flag to toggle between increase depth NOW or waiting
-	        
-	        visitedList.add(root.getAbsolutePath());
-	         //Add root to the queue
-	        childrenQueue.add(root);
-	        timeToDepthIncrease = 1;
-	        		
-	        while(!childrenQueue.isEmpty())
-	        {
-	            if(toDepth != K_PROCESS_DEPTH_ALL && depth > toDepth)
-	            	break;
-	            
-	            //System.out.println("Processing queue entries: " + childrenQueue);
-	            //process each file from queue & remove
-	            File r = childrenQueue.remove(); 
-	            timeToDepthIncrease--;
-	            //this is where you process the file, store, use, collect info, use matcher, or apply command processor to it.
-	            System.out.println("Depth-" + depth + ", file-" + r.getName() + "\t");
-	            if(processor != null) processor.process(r);
+	/**
+	 * Takes in a folder path and prints ALL the children folders.
+	 * 
+	 * @param root file
+	 * @param filter FileFilter to filter children
+	 */
+	public void processFolderBfs(File root, FileFilter filter, int toDepth, IFileProcessor processor) {
+		//sanity check
+		if(root == null) return;
 
-	            if(r.isDirectory()) {
-			        File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
-		            for(File n: files)
-		            {
-		                if(visitedList.indexOf(n.getAbsolutePath()) == -1)//not visited
-		                {
-		                	if(pendingDepthIncrease) {
-		                		timeToDepthIncrease = childrenQueue.size();
-		                		pendingDepthIncrease = false;
-		                	}
-		                    childrenQueue.add(n);
-		                    visitedList.add(n.getAbsolutePath());//mark visited
-		                	//System.out.println("File added to queue and marked as visited: " + n.getName() + "\t");
-		                }
-		                else {
-		                	//this should not be reached normally.
-		                	System.out.println("SKIPPING file " + n.getName() + "\t");
-		                }
-		            }
-	            }
-	            if(timeToDepthIncrease == 0) {
-	                depth++;
-	                pendingDepthIncrease = true;
-	            }
-	            //System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
-	        }
-        	//System.out.println("Returning from processFolderBfs()");
-	    }
-	    
-	    public static int K_PROCESS_DEPTH_ALL = -1;
-	    /**
-	     * Takes in a folder path and prints ALL the children folders.
-	     * 
-	     * @param root file
-	     * @param filter FileFilter to filter children
-	     */
-	    public void processFolderBfs(File root, FileFilter filter, int toDepth)
-	    {
-	    	//sanity check
-	        if(root == null) return;
+		Queue<File> childrenQueue = new LinkedList<File>();
 
-	        Queue<File> childrenQueue = new LinkedList<File>();
+		//store all visited folders in a list to lookup later
+		ArrayList<String> visitedList = new ArrayList<String>();
 
-	        //store all visited folders in a list to lookup later
-	        ArrayList<String> visitedList = new ArrayList<String>();
-	        
-	        visitedList.add(root.getAbsolutePath());
-	         //Add root to the queue
-	        childrenQueue.add(root);
-	        int depth = 0;
-	        int timeToDepthIncrease = 1;
-	        boolean pendingDepthIncrease = false;
+		int depth = 0;//will hold the current depth
+		int timeToDepthIncrease;//would slide up/down based on current set of nodes  
+		boolean pendingDepthIncrease = false;//a flag to toggle between increase depth NOW or waiting
 
-	        while(!childrenQueue.isEmpty())
-	        {
-	            if(toDepth != K_PROCESS_DEPTH_ALL && depth > toDepth)
-	            	break;
-	            
-	            //System.out.println("Processing queue entries: " + childrenQueue);
-	            //process each file from queue & remove
-	            File r = childrenQueue.remove(); 
-	            timeToDepthIncrease--;
-	            //this is where you process the file, store, use, collect info, use matcher, or apply command to it.
-	            System.out.println("Depth-" + depth + ", file-" + r.getName() + "\t");
+		visitedList.add(root.getAbsolutePath());
+		//Add root to the queue
+		childrenQueue.add(root);
+		timeToDepthIncrease = 1;
 
-	            if(r.isDirectory()) {
-			        File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
-		            for(File n: files)
-		            {
-		                if(visitedList.indexOf(n.getAbsolutePath()) == -1)//not visited
-		                {
-		                	if(pendingDepthIncrease) {
-		                		timeToDepthIncrease = childrenQueue.size();
-		                		pendingDepthIncrease = false;
-		                	}
-		                    childrenQueue.add(n);
-		                    visitedList.add(n.getAbsolutePath());//mark visited
-		                	//System.out.println("File added to queue and marked as visited: " + n.getName() + "\t");
-		                }
-		                else {
-		                	//this should not be reached normally.
-		                	//System.out.println("SKIPPING file " + n.getName() + "\t");
-		                }
-		            }
-	            }
-	            
-	            if(timeToDepthIncrease == 0) {
-	                depth++;
-	                pendingDepthIncrease = true;
-	            }
-	            //System.out.println("Depth "+depth+", Processing the next item in the queue, entries: " + childrenQueue);
-	            //System.out.println("break here to test");
-	        }
-        	//System.out.println("Returning from processFolderBfs()");
-	    }
+		while(!childrenQueue.isEmpty()) {
+			if(toDepth != K_PROCESS_DEPTH_ALL && depth > toDepth)
+				break;
+
+			//process each file from queue & remove
+			File r = childrenQueue.remove(); 
+			timeToDepthIncrease--;
+			//this is where you process the file, store, use, collect info or apply command to it.
+			System.out.println("Depth-" + depth + ", file-" + r.getName());
+			if(processor != null) processor.process(r);
+
+			if(r.isDirectory()) {
+				File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
+				for(File n: files) 	{
+					if(visitedList.indexOf(n.getAbsolutePath()) == -1) {//not visited
+						if(pendingDepthIncrease) {
+							timeToDepthIncrease = childrenQueue.size();
+							pendingDepthIncrease = false;
+						}
+						childrenQueue.add(n);
+						visitedList.add(n.getAbsolutePath());//mark visited
+						//System.out.println("File added to queue and marked as visited: " + n.getName());
+					}
+					else {
+						//this should not be reached normally.
+						System.out.println("SKIPPING file " + n.getName());
+					}
+				}
+			}
+			if(timeToDepthIncrease == 0) {
+				depth++;
+				pendingDepthIncrease = true;
+			}
+			//System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
+		}
+		//System.out.println("Returning from processFolderBfs()");
+	}
+
+	public static int K_PROCESS_DEPTH_ALL = -1;
+	/**
+	 * Takes in a folder path and prints ALL the children folders.
+	 * 
+	 * @param root file
+	 * @param filter FileFilter to filter children
+	 */
+	public void processFolderBfs(File root, FileFilter filter, int toDepth) {
+		//sanity check
+		if(root == null) return;
+
+		Queue<File> childrenQueue = new LinkedList<File>();
+
+		//store all visited folders in a list to lookup later
+		ArrayList<String> visitedList = new ArrayList<String>();
+
+		visitedList.add(root.getAbsolutePath());
+		//Add root to the queue
+		childrenQueue.add(root);
+		int depth = 0;
+		int timeToDepthIncrease = 1;
+		boolean pendingDepthIncrease = false;
+
+		while(!childrenQueue.isEmpty()) {
+			if(toDepth != K_PROCESS_DEPTH_ALL && depth > toDepth)
+				break;
+
+			//System.out.println("Processing queue entries: " + childrenQueue);
+			//process each file from queue & remove
+			File r = childrenQueue.remove(); 
+			timeToDepthIncrease--;
+			//this is where you process the file, store, use, collect info or apply command to it.
+			System.out.println("Depth-" + depth + ", file-" + r.getName());
+
+			if(r.isDirectory()) {
+				File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
+				for(File n: files) 	{
+					if(visitedList.indexOf(n.getAbsolutePath()) == -1) {//not visited
+						if(pendingDepthIncrease) {
+							timeToDepthIncrease = childrenQueue.size();
+							pendingDepthIncrease = false;
+						}
+						childrenQueue.add(n);
+						visitedList.add(n.getAbsolutePath());//mark visited
+						//System.out.println("File added to queue and marked as visited: " + n.getName());
+					}
+					else {
+						//this should not be reached normally.
+						//System.out.println("SKIPPING file " + n.getName());
+					}
+				}
+			}
+
+			if(timeToDepthIncrease == 0) {
+				depth++;
+				pendingDepthIncrease = true;
+			}
+			//System.out.println("Depth "+depth+", Processing the next item in the queue, entries: " + childrenQueue);
+			//System.out.println("break here to test");
+		}
+		//System.out.println("Returning from processFolderBfs()");
+	}
 
 
-	    /**
-	     * Takes in a folder path and prints the children folders filtered by filter.
-	     * 
-	     * @param root file
-	     * @param filter FileFilter to filter children
-	     */
-	    public void printFolderBfs(File root, FileFilter filter)
-	    {
-	    	//sanity check
-	        if(root == null) return;
+	/**
+	 * Takes in a folder path and prints the children folders filtered by filter.
+	 * 
+	 * @param root file
+	 * @param filter FileFilter to filter children
+	 */
+	public void printFolderBfs(File root, FileFilter filter) {
+		//sanity check
+		if(root == null) return;
 
-	        Queue<File> childrenQueue = new LinkedList<File>();
+		Queue<File> childrenQueue = new LinkedList<File>();
 
-	        //store all visited folders in a list to lookup later
-	        ArrayList<String> visitedList = new ArrayList<String>();
+		//store all visited folders in a list to lookup later
+		ArrayList<String> visitedList = new ArrayList<String>();
 
-	        visitedList.add(root.getAbsolutePath());
-	         //Add root to the queue
-	        childrenQueue.add(root);
+		visitedList.add(root.getAbsolutePath());
+		//Add root to the queue
+		childrenQueue.add(root);
 
-	        while(!childrenQueue.isEmpty())
-	        {
-	            //System.out.println("Processing queue entries: " + childrenQueue);
-	            //process each file from queue & remove
-	            File r = childrenQueue.remove(); 
-	            //this is where you process the file, store, use, collect info, use matcher, or apply command to it.
-	            //System.out.print("Filename=" + r.getName() + "\t");
+		while(!childrenQueue.isEmpty()) {
+			//System.out.println("Processing queue entries: " + childrenQueue);
+			//process each file from queue & remove
+			File r = childrenQueue.remove(); 
+			//this is where you process the file, store, use, collect info or apply command to it.
+			System.out.println("Filename-" + r.getName());
 
-	            if(r.isDirectory()) {
-			        File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
-		            for(File n: files)
-			        //for(int i = 0; files != null && (i < files.length); i++)
-		            {
-			        	//File n = files[i];
-		                if(visitedList.indexOf(n.getAbsolutePath()) == -1)//not visited
-		                {
-		                    childrenQueue.add(n);
-		                    visitedList.add(n.getAbsolutePath());//mark visited
-		                	//System.out.println("File added to queue and marked as visited: " + n.getName() + "\t");
-		                }
-		                else {
-		                	//this should not be reached normally.
-		                	System.out.println("SKIPPING file " + n.getName() + "\t");
-		                }
-		            }
-	            }
-	            System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
-	            //System.out.println("break here to test");
-	            //break;
-	        }
-        	//System.out.println("Returning from processFolderBfs()");
-	    }
+			if(r.isDirectory()) {
+				File[] files = (filter != null) ?r.listFiles(filter) :r.listFiles();
+				for(File n: files) {
+					if(visitedList.indexOf(n.getAbsolutePath()) == -1) {//not visited
+						childrenQueue.add(n);
+						visitedList.add(n.getAbsolutePath());//mark visited
+						//System.out.println("File added to queue and marked as visited: " + n.getName());
+					}
+					else {
+						//this should not be reached normally.
+						//System.out.println("SKIPPING file " + n.getName());
+					}
+				}
+			}
+			//System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
+		}
+		//System.out.println("Returning from processFolderBfs()");
+	}
 
-	    /**
-	     * Takes in a folder path and prints ALL the children folders.
-	     * 
-	     * @param root file
-	     */
-	    public void printFolderBfs(File root)
-	    {
-	    	//sanity check
-	        if(root == null) return;
-	        
-	        Queue<File> childrenQueue = new LinkedList<File>();
+	/**
+	 * Takes in a folder path and prints ALL the children folders.
+	 * 
+	 * @param root file
+	 */
+	public void printFolderBfs(File root) {
+		//sanity check
+		if(root == null) return;
 
-	        //store all visited folders in a list to lookup later
-	        ArrayList<String> visitedList = new ArrayList<String>();
+		Queue<File> childrenQueue = new LinkedList<File>();
 
-	        visitedList.add(root.getAbsolutePath());
-	         //Add root to the queue
-	        childrenQueue.add(root);
+		//store all visited folders in a list to lookup later
+		ArrayList<String> visitedList = new ArrayList<String>();
 
-	        while(!childrenQueue.isEmpty())
-	        {
-	            //process each file from queue & remove
-	            File r = childrenQueue.remove(); 
-	            //this is where you process the file, store, use, collect info, use matcher, or apply command to it.
+		visitedList.add(root.getAbsolutePath());
+		//Add root to the queue
+		childrenQueue.add(root);
 
-	            if(r.isDirectory()) {
-			        File[] files = r.listFiles();
-		            for(File n: files)
-		            {
-		                if(visitedList.indexOf(n.getAbsolutePath()) == -1)//not visited
-		                {
-		                    childrenQueue.add(n);
-		                    visitedList.add(n.getAbsolutePath());//mark visited
-		                	//System.out.println("File added to queue and marked as visited: " + n.getName() + "\t");
-		                }
-		                else {
-		                	//this should not be reached normally.
-		                	//System.out.println("SKIPPING file " + n.getName() + "\t");
-		                }
-		            }
-	            }
-	            System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
-	        }
-        	//System.out.println("Returning from processFolderBfs()");
-	    }
+		while(!childrenQueue.isEmpty()) {
+			//process each file from queue & remove
+			File r = childrenQueue.remove(); 
+			//this is where you process the file, store, use, collect info or apply command to it.
+			System.out.println("Filename-" + r.getName());
 
-	    public static void main(String[] args) {
+			if(r.isDirectory()) {
+				File[] files = r.listFiles();
+				for(File n: files) {
+					if(visitedList.indexOf(n.getAbsolutePath()) == -1) {//not visited
+						childrenQueue.add(n);
+						visitedList.add(n.getAbsolutePath());//mark visited
+						//System.out.println("File added to queue and marked as visited: " + n.getName());
+					}
+					else {
+						//this should not be reached normally.
+						//System.out.println("SKIPPING file " + n.getName());
+					}
+				}
+			}
+			//System.out.println("Processing the next item in the queue, entries: " + childrenQueue);
+		}
+		//System.out.println("Returning from processFolderBfs()");
+	}
 
-	        FileScanner s = new FileScanner();
+	public static void main(String[] args) {
 
-	        String pathStr = "testdata/bfsDemo";
-	        File folder = new File(pathStr);
-	        FileFilter tff = s.new TextFileFilter();
-	        
-	        //s.processFolderDfs(folder, tff);
-	        
-	        System.out.println("Breadth First Search Demo");
-	        System.out.println("=========================");
-	        /*
-	        //prints list of filenames as it traverses
-	        s.printFolderBfs(folder);
-	        
+		FileScanner s = new FileScanner();
+
+		String pathStr = "testdata/bfsDemo";
+		File folder = new File(pathStr);
+		FileFilter tff = s.new TextFileFilter();
+
+		//s.processFolderDfs(folder, tff);
+
+		System.out.println("Breadth First Search Demo");
+		System.out.println("=========================");
+
+		//prints list of filenames as it traverses
+		s.printFolderBfs(folder);
+		/*	        
 	        //prints list of filenames with a specific filter
 	        s.printFolderBfs(folder, tff);
 
 	        //processes list of filenames with a specific filter using custom processor
 	        PrintFileProcessor processor = new PrintFileProcessor();
-	        s.processFolderBfs(folder, tff, processor);
+	        s.processFolderBfs(folder, tff, K_PROCESS_DEPTH_ALL, processor);
 	        System.out.println("Processor result- " + processor.getResult());
-	         */	        
+
 	        //processes list of filenames with a specific filter using custom processor upto certain level
 	        RenameFileProcessor processor2 = new RenameFileProcessor();
 	        s.processFolderBfs(folder, tff, 3, processor2);
 	        System.out.println("Processor result- " + processor2.getResult());
-	        
-	        System.out.println("Breadth First Search Demo complete");
-	    }
+		 */	        
+		System.out.println("Breadth First Search Demo complete");
+	}
 
-	    
-	    
-	    /**
-	     * Accepts most of the text file types. Must pass folders else can not go to next level
-	     * @author deepak tripathy
-	     *
-	     */
-	    public class TextFileFilter implements FileFilter {
 
-			@Override
-			public boolean accept(File file) {
-				boolean flag = file.isDirectory() ||
-						StringUtil.endsWithIgnoreCase(file.getName(), ".txt") || 
-						StringUtil.endsWithIgnoreCase(file.getName(), ".data") ||
-						StringUtil.endsWithIgnoreCase(file.getName(), ".properties") ||
-						StringUtil.endsWithIgnoreCase(file.getName(), ".ini") ||
-						StringUtil.endsWithIgnoreCase(file.getName(), ".csv");
-				
-		        //System.out.println("Flag = " + flag + " for file " + file.getName());
-				return flag;
-			}
-	    	
-	    }
+
+	/**
+	 * Accepts most of the text file types. Must pass folders else can not go to next level
+	 * @author deepak tripathy
+	 *
+	 */
+	public class TextFileFilter implements FileFilter {
+
+		@Override
+		public boolean accept(File file) {
+			boolean flag = file.isDirectory() ||
+					StringUtil.endsWithIgnoreCase(file.getName(), ".txt") || 
+					StringUtil.endsWithIgnoreCase(file.getName(), ".data") ||
+					StringUtil.endsWithIgnoreCase(file.getName(), ".properties") ||
+					StringUtil.endsWithIgnoreCase(file.getName(), ".ini") ||
+					StringUtil.endsWithIgnoreCase(file.getName(), ".csv");
+
+			if(!flag)
+				System.out.println("TextFileFilter:: Skipped file " + file.getName());
+			//System.out.println("Flag = " + flag + " for file " + file.getName());
+			return flag;
+		}
+
+	}
 }
