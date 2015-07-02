@@ -7,11 +7,11 @@ Some of the implementations are of questionable nature since these were coded wh
 
 Organization:
 
-com.soniclib.bfs: contain a pilot bfs based depth file scanner/processor
-com.soniclib.utils.ColdFusion: Coldfusion->JAVA porting, under process
-com.soniclib.utils.PHP: PHP->JAVA porting, under process
-com.soniclib.comparator: used in the PHP port
-com.soniclib.type: pre-JAVA7 code, trying to create a generic container and multi-level access.
+com.soniclib.bfs- contain a pilot bfs based depth file scanner/processor
+com.soniclib.utils.ColdFusion- Coldfusion->JAVA porting, under process
+com.soniclib.utils.PHP- PHP->JAVA porting, under process
+com.soniclib.comparator- used in the PHP port
+com.soniclib.type- pre-JAVA7 code, trying to create a generic container and multi-level access.
 
 Notes:
 

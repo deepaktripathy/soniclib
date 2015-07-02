@@ -1,7 +1,9 @@
 package com.soniclib.utils.ColdFusion;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
+
+import com.soniclib.utils.StringUtil;
 
 public class CFUtil {
 
@@ -18,19 +20,22 @@ public class CFUtil {
 	 * @param input
 	 * @param list1 source List
 	 * @param list2 replacement List
+	 * @throws Exception if supplied lists are of dissimilar sizes
 	 * @return A copy of the string, after making replacements.
 	 */
-	public static String ReplaceList(String input, List<String> list1, List<String> list2, boolean caseInsensitive) {
-		String input1 = new String(input);
-		StringBuffer sb = new StringBuffer(input);
+	public static String ReplaceList2(String input, List<String> list1, List<String> list2, boolean caseInsensitive) throws Exception{
+		if(! areSameSize(list1, list2))
+			throw new Exception("Input lists are must be of same size");
+		//make a copy to replace
+		StringBuffer sb = new StringBuffer(new String(input));
+		
 		for(int index=0; index < list1.size(); index++) {
 			String findStr = list1.get(index);
 			String replaceStr = list2.get(index);
-			//TODO: replace the following with a more efficient method using StringBuffer.
-			input.replaceAll(findStr, replaceStr);
+			StringUtil.replaceAll(sb, findStr, replaceStr);
 		}
 		
-		return input1;
+		return sb.toString();
 	}
 
 	/**
@@ -42,10 +47,8 @@ public class CFUtil {
 	public static Double ArrayAvg (List<Double> list, int from, int to) {
 		List subList = list.subList(from, to);
 		double sum = 0d;
-		Iterator<Double> sublistIter = subList.iterator();
-		while(sublistIter.hasNext()) {
-			Double obj = sublistIter.next();
-			sum += obj;
+		for(Double value : list) {
+			sum += value;
 		}
 		return sum;
 	}
@@ -54,7 +57,25 @@ public class CFUtil {
 	private static double arrayOperation(Object lastResult, Object element, int operation) {
 		throw new UnsupportedOperationException();
 	}
-	 
+
+	
+	/**
+	 * Returns true: if both are nulls || must be same size
+	 * 
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public static <T>  boolean  areSameSize(Collection<T> c1, Collection<T> c2) {
+		if(c1 != null && c2 != null) {
+			return c1.size() == c2.size();
+		}
+		if(c1 == null && c2 == null) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	/**
 	 * @param args

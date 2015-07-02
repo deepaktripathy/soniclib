@@ -20,15 +20,17 @@ public class ArrayUtil {
 	 * This may seems fine in PHP, but in JAVA there is no such array structure that 
 	 * can have key[value]. The nearest approximation is a Map and this is what it returns.
 	 * Note: Can have null key as well as null values.
-	 * If there are more keys than values, the extra values are associated with null keys, and vice versa. 
+	 * If there are more keys than values, the extra values are associated with null keys, 
+	 * but extra values are dropped since the keys for these are null.
+	 *  
 	 * @param keys
 	 * @param values
 	 * @return
 	 */
-	public static Map array_combine(Object[] keys, Object[] values) {
+	public static Map<Object, Object> array_combine(Object[] keys, Object[] values) {
 		
 		if(keys!= null && values != null) {
-			Map result = new HashMap();
+			Map<Object, Object> result = new HashMap<Object, Object>();
 			int minLength = keys.length;
 			if(values.length < minLength)
 				minLength = values.length;
@@ -37,11 +39,9 @@ public class ArrayUtil {
 			for(int index = 0; index < minLength; index++)
 				result.put(keys[index], values[index]);
 			
-			//now handle the disjoint elements
+			//now handle the surplus keys
 			for(int kIndex = minLength; kIndex < keys.length; kIndex++)
 				result.put(keys[kIndex], null);
-			for(int vIndex = minLength; vIndex < values.length; vIndex++)
-				result.put(null, values[vIndex]);
 			
 			return result;
 		}
@@ -60,11 +60,14 @@ public class ArrayUtil {
 			Set keyset = map.keySet();
 			List keys = new ArrayList(keyset);
 			for(int index = 0; index< keys.size(); index++) {
-				String eleVal = keys.get(index).toString();
+				Object key = keys.get(index);
+				String keyVal = key.toString();
 				if(upperCase)
-					keys.add(index, eleVal.toUpperCase());
+					map.put(keyVal.toUpperCase(), map.get(key));
 				else
-					keys.add(index, eleVal.toLowerCase());
+					map.put(keyVal.toLowerCase(), map.get(key));
+				//then delete the original entry
+				map.remove(key);
 			}
 		}
 		
